@@ -1,6 +1,8 @@
 
 const noble = require('noble');
 
+const config = require('./config');
+
 const DREAMSCREEN = {
     id: '0000ff60-0000-1000-8000-00805f9b34fb',
     service: 'ff60',
@@ -47,27 +49,6 @@ const connect = peripheral =>
         return new DreamScreen(null, command, response);
     });
 
-const PROPS = {
-    mode: {
-        key: 'B',
-
-        idle: '0',
-        video: '1',
-        music: '2',
-        ambientStatic: '3',
-        identify: '4',
-        ambientShow: '5',
-    },
-
-    brightness: {
-        key: 'C',
-        min: 0,
-        max: 100,
-    },
-
-    // TODO - add all the other properties
-};
-
 class DreamScreen {
     constructor (service, command, response) {
         this.service = service;
@@ -82,13 +63,13 @@ class DreamScreen {
     }
 
     setMode (type) {
-        const opCode = PROPS.mode[type];
+        const opCode = config.mode[type];
         if (opCode == null) return Promise.reject(`Invalid mode: ${type}`);
         return this.writeProp('mode', opCode);
     }
 
     setBrigtness (value) {
-        const {min, max} = PROPS.brightness;
+        const {min, max} = config.brightness;
         const data = ('000' + Math.max(min, Math.min(max, value))).slice(-3);
         return this.writeProp('brightness', data);
     }
@@ -105,7 +86,7 @@ class DreamScreen {
     send (code, intermediateStep) {
         const defer = getDefer();
         this._queue.push(() => {
-            console.log(' --->', code);
+            console.log('  --->', code);
             return callAsPromise(this.command, 'write', [new Buffer(code), false])
             .then(intermediateStep)
             .then(defer.resolve, defer.reject);
@@ -126,7 +107,7 @@ class DreamScreen {
                     isNotification,
                     data: cleanData,
                 });
-                console.log(' <---', getMessage());
+                console.log(' <--- ', getMessage());
                 this._listeners.forEach(defer => defer.resolve(getMessage()));
                 this._listeners = [];
             });
