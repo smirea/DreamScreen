@@ -1,0 +1,26 @@
+{
+  "name": "dreamscreen",
+  "version": "0.1.0",
+  "description": "A high level abstraction to communitcate with the DreamScreen BLE stick",
+  "main": "index.js",
+  "scripts": {
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/smirea/DreamScreen.git"
+  },
+  "keywords": [
+    "DreamScreen",
+    "BLE"
+  ],
+  "author": "Stefan Mirea <steven.mirea@gmail.com> (https://github.com/smirea)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smirea/DreamScreen/issues"
+  },
+  "homepage": "https://github.com/smirea/DreamScreen#readme",
+  "dependencies": {
+    "noble": "^1.7.0"
+  }
+}
