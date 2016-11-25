@@ -6,6 +6,14 @@ Uses the [command set](http://dreamscreen.boards.net/attachment/download/5) from
 
 Uses [noble](https://github.com/sandeepmistry/noble/) as the interface layer
 
+## Install
+
+It's [on npm](https://www.npmjs.com/package/dreamscreen)
+
+```js
+npm install --save dreamscreen
+```
+
 ## Usage
 
 ```js
