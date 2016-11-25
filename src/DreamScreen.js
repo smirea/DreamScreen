@@ -62,19 +62,62 @@ class DreamScreen {
         this._setupListeners();
     }
 
+    /******************************/
+    /**** HIGH LEVEL INTERFACE ****/
+    /******************************/
+
+    /**
+     * Changes the display mode
+     *
+     * Values:
+     *  - idle
+     *  - video
+     *  - music
+     *  - ambientStatic
+     *  - identify
+     *  - ambientShow
+     *
+     * @param {String} type
+     *
+     * @return {Promise}
+     */
     setMode (type) {
         const opCode = config.mode[type];
         if (opCode == null) return Promise.reject(`Invalid mode: ${type}`);
         return this.writeProp('mode', opCode);
     }
 
+    /**
+     * Sets the brightness (0 - 100)
+     *
+     * @param {Number} value
+     *
+     * @return {Promise}
+     */
     setBrigtness (value) {
         const {min, max} = config.brightness;
         const data = ('000' + Math.max(min, Math.min(max, value))).slice(-3);
         return this.writeProp('brightness', data);
     }
 
-    writeProp (type, value) { return this.sendWrite('#' + PROPS[type].key + 'w' + value); };
+    /***************************/
+    /**** RAW INPUT METHODS ****/
+    /***************************/
+
+    /**
+     * Utility that sends the correct command code.
+     * Does not do any type-checking or value conversion
+     *
+     * @example
+     *  writeProp('mode', '1')  // same as this.setMode('video')
+     *      // will send: '#Bw1'
+     *
+     * @param  {String} cmd   One of the commands available in config.js
+     * @param  {String} value Anything to be appended to the command
+     *
+     * @return {Promise}
+     */
+    writeProp (cmd, value) { return this.sendWrite('#' + PROPS[cmd].key + 'w' + value); };
 
     sendRead (code) {
         return this.send(code, () => this._addMessageListener())
@@ -94,6 +137,10 @@ class DreamScreen {
         this._exec();
         return defer.promise;
     }
+
+    /**************************/
+    /**** INTERNAL METHODS ****/
+    /**************************/
 
     _setupListeners () {
         return callAsPromise(this.response, 'notify', [true])

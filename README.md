@@ -1,6 +1,6 @@
 ## DreamScreen BLE Interface
 
-Provides a convenient high level abstraction to the BLE API for the [DreamScreen](http://www.dreamscreentv.com/)
+Provides a convenient high level abstraction to the BLE interface of the [DreamScreen](http://www.dreamscreentv.com/)
 
 Uses the [command set](http://dreamscreen.boards.net/attachment/download/5) from the [DIY Board](http://dreamscreen.boards.net/board/10/dreamscreen-diy)
 
