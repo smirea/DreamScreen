@@ -117,7 +117,7 @@ class DreamScreen {
      *
      * @return {Promise}
      */
-    writeProp (cmd, value) { return this.sendWrite('#' + PROPS[cmd].key + 'w' + value); };
+    writeProp (cmd, value) { return this.sendWrite('#' + config[cmd].key + 'w' + value); };
 
     sendRead (code) {
         return this.send(code, () => this._addMessageListener())
