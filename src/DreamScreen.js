@@ -11,16 +11,27 @@ const DREAMSCREEN = {
     nameChar: '0000ff63-0000-1000-8000-00805f9b34fb',       // (Read/Write)
 };
 
-module.exports = () => new Promise((resolve, reject) => {
+module.exports = (options) => new Promise((resolve, reject) => {
+    options = Object.assign({}, options, {
+        // If set to true, instead of using the DREAMSCREEN.id to discover the device
+        //  it will instead discover all devices until one with the options.localName is found
+        discoverByName: false,
+
+        // Relevant if discoverByName is used - the name of the DS
+        localName: 'DreamScreen',
+    });
+
     noble.on('stateChange', function(state) {
         if (state === 'poweredOn') {
-            noble.startScanning([DREAMSCREEN.id]);
+            if (options.discoverByName) noble.startScanning();
+            else noble.startScanning([DREAMSCREEN.id]);
         } else {
             noble.stopScanning();
         }
     });
 
     noble.on('discover', peripheral => {
+        if (options.discoverByName && peripheral.advertisement.localName !== options.localName) return;
         noble.stopScanning();
 
         peripheral.on('disconnect', () => {

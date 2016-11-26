@@ -1,6 +1,6 @@
 {
   "name": "dreamscreen",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A high level abstraction to communitcate with the DreamScreen BLE stick",
   "main": "index.js",
   "scripts": {
