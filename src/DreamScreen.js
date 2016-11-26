@@ -13,6 +13,8 @@ const DREAMSCREEN = {
 
 module.exports = (options) => new Promise((resolve, reject) => {
     options = Object.assign({}, {
+        debug: false,
+
         // If set to true, instead of using the DREAMSCREEN.id to discover the device
         //  it will instead discover all devices until one with the options.localName is found
         discoverByName: false,
@@ -35,15 +37,15 @@ module.exports = (options) => new Promise((resolve, reject) => {
         noble.stopScanning();
 
         peripheral.on('disconnect', () => {
-            process.exit(0);
+            // process.exit(0);
         });
 
-        console.log(peripheral.advertisement)
-        connect(peripheral).then(resolve, reject);
+        if (options.debug) console.log(peripheral.advertisement);
+        connect(peripheral, options).then(resolve, reject);
     });
 });
 
-const connect = peripheral =>
+const connect = (peripheral, options) =>
     Promise.resolve()
     .then(() => callAsPromise(peripheral, 'connect'))
     .then(() => callAsPromise(peripheral, 'discoverServices', [[DREAMSCREEN.service]]))
@@ -55,16 +57,17 @@ const connect = peripheral =>
         const response = chars.find(item => item.uuid === 'ff62');
         if (!response) throw new Error(`response characteristic not found`);
 
-        console.log('--- ready ---');
+        if (options.debug) console.log('--- ready ---');
 
-        return new DreamScreen(null, command, response);
+        return new DreamScreen(null, command, response, options);
     });
 
 class DreamScreen {
-    constructor (service, command, response) {
+    constructor (service, command, response, options) {
         this.service = service;
         this.command = command;
         this.response = response;
+        this.options = options;
 
         this._queue = [];
         this._listeners = [];
@@ -140,7 +143,7 @@ class DreamScreen {
     send (code, intermediateStep) {
         const defer = getDefer();
         this._queue.push(() => {
-            console.log('  --->', code);
+            if (this.options.debug) console.log('  --->', code);
             return callAsPromise(this.command, 'write', [new Buffer(code), false])
             .then(intermediateStep)
             .then(defer.resolve, defer.reject);
@@ -165,7 +168,7 @@ class DreamScreen {
                     isNotification,
                     data: cleanData,
                 });
-                console.log(' <--- ', getMessage());
+                if (this.options.debug) console.log(' <--- ', getMessage());
                 this._listeners.forEach(defer => defer.resolve(getMessage()));
                 this._listeners = [];
             });
