@@ -1,4 +1,5 @@
 
+const EventEmitter = require('events');
 const noble = require('noble');
 
 const config = require('./config');
@@ -36,10 +37,6 @@ module.exports = (options) => new Promise((resolve, reject) => {
         if (options.discoverByName && peripheral.advertisement.localName !== options.localName) return;
         noble.stopScanning();
 
-        peripheral.on('disconnect', () => {
-            // process.exit(0);
-        });
-
         if (options.debug) console.log(peripheral.advertisement);
         connect(peripheral, options).then(resolve, reject);
     });
@@ -59,12 +56,21 @@ const connect = (peripheral, options) =>
 
         if (options.debug) console.log('--- ready ---');
 
-        return new DreamScreen(null, command, response, options);
+        return new DreamScreen({peripheral, command, response}, options);
     });
 
-class DreamScreen {
-    constructor (service, command, response, options) {
-        this.service = service;
+/**
+ * Events:
+ *  - disconnect    ()
+ *  - read          (message)
+ *  - send          (code)
+ */
+class DreamScreen extends EventEmitter {
+
+    constructor ({peripheral, command, response}, options) {
+        super();
+
+        this.peripheral = peripheral;
         this.command = command;
         this.response = response;
         this.options = options;
@@ -141,6 +147,7 @@ class DreamScreen {
     sendWrite (code) { return this.send(code); }
 
     send (code, intermediateStep) {
+        this.emit('send', code);
         const defer = getDefer();
         this._queue.push(() => {
             if (this.options.debug) console.log('  --->', code);
@@ -157,6 +164,11 @@ class DreamScreen {
     /**************************/
 
     _setupListeners () {
+        this.peripheral.on('disconnect', () => {
+            if (this.options.debug) console.log('Disconnected');
+            this.emit('disconnect');
+        });
+
         return callAsPromise(this.response, 'notify', [true])
         .then(() => {
             this.response.on('read', (data, isNotification) => {
@@ -168,9 +180,12 @@ class DreamScreen {
                     isNotification,
                     data: cleanData,
                 });
+
                 if (this.options.debug) console.log(' <--- ', getMessage());
+
                 this._listeners.forEach(defer => defer.resolve(getMessage()));
                 this._listeners = [];
+                this.emit('read', getMessage());
             });
 
             this._init = true;

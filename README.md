@@ -36,6 +36,15 @@ Current options that can be passed to **getInstance()**:
 | localName      | DreamScreen | The default name of the device. Only relevant in conjunction with discoverByName = true              |
 | debug          | false       | Prints out relevant information |
 
+## Events
+
+The resulting instance extends the node EventEmitter class and follows the following events:
+
+| name       | arguments | description |
+|------------|-----------|-------------|
+| disconnect |           | The peripheral has disconnected |
+| read       | {data, isNotification} | A read has occurred. These generally happen after sendRead operations |
+| send       | code      | Any code gets written to the peripheral |
 
 ## Caveats
 
