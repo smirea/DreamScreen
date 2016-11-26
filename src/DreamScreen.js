@@ -12,14 +12,14 @@ const DREAMSCREEN = {
 };
 
 module.exports = (options) => new Promise((resolve, reject) => {
-    options = Object.assign({}, options, {
+    options = Object.assign({}, {
         // If set to true, instead of using the DREAMSCREEN.id to discover the device
         //  it will instead discover all devices until one with the options.localName is found
         discoverByName: false,
 
         // Relevant if discoverByName is used - the name of the DS
         localName: 'DreamScreen',
-    });
+    }, options);
 
     noble.on('stateChange', function(state) {
         if (state === 'poweredOn') {

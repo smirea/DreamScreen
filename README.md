@@ -32,8 +32,7 @@ Current options that can be passed to **getInstance()**:
 
 | option         | default     | description                                                                                          |
 |----------------|-------------|------------------------------------------------------------------------------------------------------|
-| discoverByName | false       | The default operation is to try to directly connect to the device by its ID If this is set to *true* |
-|                |             | it will instead discover all devices and stops when one of them matches options.localName            |
+| discoverByName | false       | The default operation is to try to directly connect to the device by its ID If this is set to *true*, it will instead discover all devices and stops when one of them matches options.localName |
 | localName      | DreamScreen | The default name of the device. Only relevant in conjunction with discoverByName = true              |
 
 
