@@ -52,4 +52,4 @@ Noble does not play nice with multiple instances so this package hijacks it.
 
 Things are probably not going to go well if this is used together with other noble packages.
 
-Tested on OSX with node 6.4.0
+Tested on OSX and on Raspberry PI 3

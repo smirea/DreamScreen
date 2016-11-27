@@ -46,7 +46,11 @@ const connect = (peripheral, options) =>
     Promise.resolve()
     .then(() => callAsPromise(peripheral, 'connect'))
     .then(() => callAsPromise(peripheral, 'discoverServices', [[DREAMSCREEN.service]]))
-    .then(([service]) => callAsPromise(service, 'discoverCharacteristics', [[]]))
+    .then(([service]) =>
+        service ?
+            callAsPromise(service, 'discoverCharacteristics', [[]]) :
+            Promise.reject('service not found')
+    )
     .then((chars) => {
         const command = chars.find(item => item.uuid === 'ff61');
         if (!command) throw new Error(`command characteristic not found`);
